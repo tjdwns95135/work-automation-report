@@ -16,7 +16,9 @@
   *{box-sizing:border-box}
   html,body{height:100%; margin:0}
   body{
-    background:#d9dee5; overflow:hidden;
+    background:#1a2836;
+    background:linear-gradient(160deg,#20313f 0%,#16222e 55%,#111b25 100%);
+    overflow:hidden;
     font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     color:var(--ink); -webkit-font-smoothing:antialiased;
   }
@@ -119,7 +121,7 @@
   .note{font-size:14px; color:var(--faint); margin-top:16px}
 
   /* ---- Chrome (nav) ---- */
-  .progress{position:fixed; top:0; left:0; height:3px; background:var(--navy); width:0; transition:width .25s ease; z-index:30}
+  .progress{position:fixed; top:0; left:0; height:3px; background:#7ea6cc; width:0; transition:width .25s ease; z-index:30}
   .ctrl{position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
     display:flex; align-items:center; gap:4px; background:rgba(255,255,255,.94); border:1px solid var(--line2);
     border-radius:6px; padding:5px 6px; box-shadow:0 6px 18px rgba(15,25,40,.14); z-index:30; user-select:none}
@@ -308,7 +310,7 @@
         <p class="s-lead">"전/후 이미지를 통째로 AI에 주면 되겠지" 했지만, 바뀐 곳을 놓치거나 없는 걸 지어냈습니다(환각). 아래 벽들 때문에 도구를 겹쳐야 했습니다.</p>
         <ul class="list">
           <li><span class="k">내용은 잘게 잘라 줘야 정확</span> — 통째로 주면 뭉개짐 → 영역 <b>크롭</b></li>
-          <li><span class="k">"무엇이 바뀌었나"와 "어디가 바뀌었나"는 다른 문제</span> — 위치는 AI가 못 잡음 → <b>OCR</b>로 위치 좌표(Microsoft OCR 사용)</li>
+          <li><span class="k">"무엇이 바뀌었나"와 "어디가 바뀌었나"는 다른 문제</span> — 위치는 AI가 특정하지 못함 → <b>OCR</b>로 위치 좌표(Microsoft OCR 사용)</li>
           <li><span class="k">크기·비율이 다른 전/후</span> — 대응 영역끼리 짝지어 <b>정렬</b>하는 로직 별도</li>
           <li><span class="k">QR코드</span> — 눈으로도 OCR로도 못 읽음 → <b>디코딩</b>으로 내용 비교</li>
         </ul>
