@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>업무 자동화 시도 보고 — 구매 발주 자동화 & 영업지원 표시사항 비교</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1c2230; --sub:#5b6472; --line:#e4e7ec;
+    --accent:#2563eb; --accent-soft:#eaf1ff;
+    --good:#0f9d58; --good-soft:#e7f6ee;
+    --warn:#c2410c; --warn-soft:#fdeee5;
+    --drop:#b91c1c; --drop-soft:#fbeaea;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1420; --card:#171d2b; --ink:#e8ecf3; --sub:#9aa4b5; --line:#2a3242;
+      --accent:#6ea0ff; --accent-soft:#1b2740;
+      --good:#4ade80; --good-soft:#12291d;
+      --warn:#fb923c; --warn-soft:#2a1c10;
+      --drop:#f87171; --drop-soft:#2a1414;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.7; letter-spacing:-.01em;
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:0 20px 100px}
+  a{color:var(--accent)}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    padding:56px 0 30px; border-bottom:1px solid var(--line); margin-bottom:36px;
+  }
+  .kicker{
+    display:inline-block; font-size:.78rem; font-weight:700; letter-spacing:.08em;
+    color:var(--accent); background:var(--accent-soft); padding:5px 12px; border-radius:999px;
+  }
+  h1{font-size:2.05rem; line-height:1.28; margin:18px 0 10px; letter-spacing:-.02em}
+  .lede{color:var(--sub); font-size:1.06rem; max-width:64ch; margin:0}
+  .meta{margin-top:22px; font-size:.85rem; color:var(--sub); display:flex; flex-wrap:wrap; gap:8px 18px}
+  .meta b{color:var(--ink); font-weight:600}
+
+  /* ---------- TL;DR cards ---------- */
+  .tldr{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:30px 0 10px}
+  @media(max-width:680px){.tldr{grid-template-columns:1fr}}
+  .tcard{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 20px 18px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+  }
+  .tcard::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px}
+  .tcard.win::before{background:var(--good)}
+  .tcard.stop::before{background:var(--drop)}
+  .tcard .badge{font-size:.72rem; font-weight:700; padding:4px 10px; border-radius:999px; display:inline-block}
+  .tcard.win .badge{background:var(--good-soft); color:var(--good)}
+  .tcard.stop .badge{background:var(--drop-soft); color:var(--drop)}
+  .tcard h3{margin:12px 0 6px; font-size:1.12rem}
+  .tcard p{margin:0; color:var(--sub); font-size:.92rem}
+  .tcard .oneline{margin-top:12px; font-size:.9rem; color:var(--ink); font-weight:600}
+
+  /* ---------- Sections ---------- */
+  section{margin-top:56px}
+  .secnum{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:9px; font-size:.9rem; font-weight:800; color:#fff;
+    margin-right:10px; vertical-align:3px;
+  }
+  .part1 .secnum{background:var(--accent)}
+  .part2 .secnum{background:var(--drop)}
+  h2{font-size:1.55rem; margin:0 0 6px; letter-spacing:-.02em}
+  .sectag{font-size:.82rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase}
+  .part1 .sectag{color:var(--accent)}
+  .part2 .sectag{color:var(--drop)}
+  h3.blk{font-size:1.16rem; margin:34px 0 10px; padding-top:6px}
+  h3.blk .n{color:var(--sub); font-weight:600; margin-right:8px}
+  p{margin:12px 0}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; box-shadow:var(--shadow); margin:16px 0}
+
+  ul.clean{list-style:none; padding:0; margin:14px 0}
+  ul.clean li{position:relative; padding:7px 0 7px 26px; border-bottom:1px dashed var(--line)}
+  ul.clean li:last-child{border-bottom:0}
+  ul.clean li::before{content:""; position:absolute; left:4px; top:16px; width:8px; height:8px; border-radius:2px; background:var(--accent)}
+  .part2 ul.clean li::before{background:var(--drop)}
+  ul.clean li b{font-weight:700}
+
+  .pain li::before{background:var(--warn)!important}
+
+  /* ---------- Flow diagram ---------- */
+  .flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:10px; margin:20px 0}
+  .step{
+    flex:1 1 130px; min-width:120px; background:var(--card); border:1px solid var(--line);
+    border-radius:11px; padding:13px 14px; box-shadow:var(--shadow); position:relative;
+  }
+  .step .t{font-size:.7rem; color:var(--sub); font-weight:700; letter-spacing:.04em}
+  .step .d{font-size:.92rem; font-weight:600; margin-top:3px}
+  .step .s{font-size:.78rem; color:var(--sub); margin-top:4px; line-height:1.5}
+  .arrow{align-self:center; color:var(--sub); font-weight:800; font-size:1.1rem; flex:0 0 auto}
+  @media(max-width:680px){
+    .flow{flex-direction:column}
+    .arrow{transform:rotate(90deg); align-self:center}
+  }
+  .step.hot{border-color:var(--accent); background:var(--accent-soft)}
+  .part2 .step.hot{border-color:var(--drop); background:var(--drop-soft)}
+
+  /* ---------- Architecture 3-layer ---------- */
+  .arch{display:grid; gap:14px; margin:20px 0}
+  .layer{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; box-shadow:var(--shadow)}
+  .layer .lh{font-weight:700; font-size:.98rem; display:flex; align-items:center; gap:9px}
+  .layer .lh .tag{font-size:.68rem; background:var(--accent-soft); color:var(--accent); padding:3px 9px; border-radius:6px; font-weight:700}
+  .layer .lb{color:var(--sub); font-size:.9rem; margin-top:6px}
+  .arch .conn{text-align:center; color:var(--sub); font-size:1.2rem; line-height:0; margin:-6px 0}
+
+  /* ---------- Journey timeline ---------- */
+  .journey{margin:22px 0; position:relative}
+  .jrow{display:grid; grid-template-columns:34px 1fr; gap:14px; padding-bottom:18px; position:relative}
+  .jrow:not(:last-child)::before{content:""; position:absolute; left:16px; top:30px; bottom:-4px; width:2px; background:var(--line)}
+  .jdot{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.85rem; color:#fff; z-index:1}
+  .j1{background:#64748b}.j2{background:#7c3aed}.j3{background:#0ea5e9}.j4{background:#0891b2}.j5{background:var(--drop)}
+  .jbody{background:var(--card); border:1px solid var(--line); border-radius:11px; padding:13px 16px; box-shadow:var(--shadow)}
+  .jbody .jt{font-weight:700; font-size:.98rem}
+  .jbody .jp{color:var(--sub); font-size:.9rem; margin:5px 0 0}
+  .jbody .jbad{color:var(--warn); font-size:.86rem; margin-top:7px; font-weight:600}
+  .jbody .jbad::before{content:"⚠ "; }
+
+  /* ---------- Compare table ---------- */
+  .tblwrap{overflow-x:auto; margin:18px 0; border:1px solid var(--line); border-radius:12px}
+  table{border-collapse:collapse; width:100%; font-size:.92rem; min-width:520px}
+  th,td{text-align:left; padding:12px 15px; border-bottom:1px solid var(--line)}
+  thead th{background:var(--accent-soft); color:var(--ink); font-weight:700; font-size:.85rem}
+  .part2 thead th{background:var(--drop-soft)}
+  tbody tr:last-child td{border-bottom:0}
+  td.was{color:var(--sub)}
+  td.now{font-weight:600}
+
+  /* ---------- Callout ---------- */
+  .callout{border-left:4px solid var(--accent); background:var(--accent-soft); padding:16px 20px; border-radius:0 12px 12px 0; margin:20px 0}
+  .callout.warn{border-color:var(--warn); background:var(--warn-soft)}
+  .callout.drop{border-color:var(--drop); background:var(--drop-soft)}
+  .callout .ct{font-weight:800; margin-bottom:4px; font-size:.95rem}
+  .callout p{margin:4px 0}
+  .callout.warn .ct{color:var(--warn)} .callout.drop .ct{color:var(--drop)} .callout .ct{color:var(--accent)}
+
+  /* ---------- Decision box ---------- */
+  .decision{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0}
+  @media(max-width:680px){.decision{grid-template-columns:1fr}}
+  .dopt{border:1px solid var(--line); border-radius:12px; padding:16px 18px; background:var(--card); box-shadow:var(--shadow)}
+  .dopt.no{opacity:.72}
+  .dopt .dh{font-weight:800; font-size:.95rem; display:flex; align-items:center; gap:8px}
+  .dopt.yes .dh{color:var(--good)} .dopt.no .dh{color:var(--drop)}
+  .dopt .cost{font-size:1.35rem; font-weight:800; margin:8px 0 2px}
+  .dopt .cn{font-size:.85rem; color:var(--sub)}
+
+  .divider{height:1px; background:var(--line); margin:60px 0 0}
+
+  footer{margin-top:40px; padding-top:24px; border-top:1px solid var(--line); color:var(--sub); font-size:.85rem}
+
+  @media print{
+    body{background:#fff}
+    .tcard,.card,.step,.layer,.jbody,.dopt,.tblwrap{box-shadow:none}
+    section{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="kicker">업무 자동화 시도 보고</span>
+    <h1>구매 발주 자동화 &amp; 영업지원 표시사항 비교<br>— 무엇을, 왜, 어떻게 했나</h1>
+    <p class="lede">두 건의 사내 업무 자동화를 직접 설계·개발했습니다. 하나는 <b>성공적으로 운영 중</b>이고,
+    하나는 <b>검토 끝에 중단(드롭)</b>했습니다. 이 문서는 각각을 <b>어떤 프로세스로 정의했고, 왜 그렇게 판단했는지</b>를 정리한 보고서입니다.</p>
+    <div class="meta">
+      <span><b>대상 업무</b> 원료 구매 발주 · 영업지원 표시사항 검수</span>
+      <span><b>형태</b> 사내 웹 도구(자체 개발)</span>
+      <span><b>핵심</b> 자동화의 성공과 실패를 ROI로 판단</span>
+    </div>
+  </header>
+
+  <!-- TL;DR -->
+  <div class="tldr">
+    <div class="tcard win">
+      <span class="badge">✅ 운영 중</span>
+      <h3>① 구매 발주 자동화</h3>
+      <p>ERP·재고·배합비가 흩어져 <b>전 과정을 수기 엑셀</b>로 계산하던 구매 발주 업무를,
+      데이터를 한곳에 모아 <b>제품만 등록하면 소요량·부족분·발주·이관까지 자동 산출</b>되게 만들었습니다.</p>
+      <div class="oneline">→ 웹앱 배포 완료, 실사용 가능 상태</div>
+    </div>
+    <div class="tcard stop">
+      <span class="badge">⛔ 중단(드롭)</span>
+      <h3>② 영업지원 표시사항 비교</h3>
+      <p>건기식 케이스의 개정 전/후 라벨을 <b>한 글자씩 눈으로 대조</b>하던 검수를 자동화 시도.
+      정확도를 끌어올렸지만 <b>한 건당 비용 대비 신뢰할 정확도에 못 미쳐</b> 중단했습니다.</p>
+      <div class="oneline">→ "이 비용이면 사람이 낫다"는 결론</div>
+    </div>
+  </div>
+
+  <!-- ================= PART 1 ================= -->
+  <section class="part1">
+    <div class="sectag">Part 1 · 성공 사례</div>
+    <h2><span class="secnum">1</span>구매 발주 자동화</h2>
+    <p>구매팀이 매일 하던 "오늘 무엇을, 얼마나 발주할지" 계산을 사람이 하지 않도록 만든 프로젝트입니다.</p>
+
+    <h3 class="blk"><span class="n">1-1</span>기존 업무 방식 — 왜 힘들었나</h3>
+    <div class="card">
+      <p style="margin-top:0">원료 하나를 발주하려면 담당자가 아래를 <b>매번 손으로</b> 이어붙여야 했습니다.</p>
+      <ul class="clean pain">
+        <li><b>소요량 계산</b> — 제품별 배합비·투입원료를 일일이 엑셀로 옮겨 "이 제품 이만큼 만들려면 원료가 얼마나 드는지" 계산</li>
+        <li><b>부족분 판단</b> — 그 소요량을 재고장 엑셀 + 공장별 원료현황과 <b>손으로 대조</b>하며 모자란 양 산출</li>
+        <li><b>1·2공장 합산</b> — 같은 원료가 공장마다 다른 코드로 흩어져 있어 코드별로 일일이 합산(누락·중복 발생)</li>
+        <li><b>이관·결재</b> — 공장 간 옮길 원료는 따로 모아 <b>단가를 찾아가며</b> 결재 상신</li>
+      </ul>
+      <div class="callout warn" style="margin-bottom:0">
+        <div class="ct">그 결과</div>
+        <p>⏱ 시간 소모 · ❌ 휴먼 에러 · 🔀 데이터 분산(ERP·재고·배합비·단가가 전부 따로) · 👤 담당자 한 명에게 묶이는 <b>속인화</b></p>
+      </div>
+    </div>
+
+    <h3 class="blk"><span class="n">1-2</span>문제의 뿌리 — "ERP에서 데이터를 못 꺼낸다"</h3>
+    <p>모든 수작업의 원인은 하나였습니다. <b>ERP에 API가 없어</b>, 품목코드·품목명으로 배합비·투입원료를 자동으로 끌어올 수 없다는 것.
+    그래서 계산의 재료가 되는 데이터부터 사람이 옮겨야 했습니다. 문제를 <b>"데이터 확보"</b>와 <b>"자동 파이프라인"</b> 두 갈래로 나눠 정면 돌파했습니다.</p>
+
+    <h3 class="blk"><span class="n">1-3</span>어떻게 접근했나 — 프로세스 정의</h3>
+    <div class="arch">
+      <div class="layer">
+        <div class="lh"><span class="tag">① 데이터 확보</span> ERP사에 공문 발송</div>
+        <div class="lb">품목코드·품목명별 <b>배합비·투입원료를 엑셀로 정식 수령</b>. (동시에 API 지원을 별도 요청해 2차 고도화의 발판 마련)</div>
+      </div>
+      <div class="conn">▼</div>
+      <div class="layer">
+        <div class="lh"><span class="tag">② 자동 수집</span> 남는 노트북 1대 + 화면 자동화</div>
+        <div class="lb">API가 없으니 <b>ERP 화면을 자동으로 조작(pywinauto)</b>해 필요한 정보를 엑셀로 내보내고, 그걸 <b>DB에 자동 적재·주기 갱신</b>. 사람 개입 없이 최신 상태 유지.</div>
+      </div>
+      <div class="conn">▼</div>
+      <div class="layer">
+        <div class="lh"><span class="tag">③ 웹앱</span> 한곳에서 계산 자동화</div>
+        <div class="lb">담당자는 <b>제품만 등록</b>. 나머지(소요량·부족분·발주·이관)는 웹앱이 모아둔 데이터로 자동 계산.</div>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="ct">핵심 아이디어</div>
+      <p>"ERP에 API가 없다"는 제약을 <b>공문(데이터 확보) + 화면 자동화(파이프라인)</b>로 우회했습니다. 기술이 안 되면 프로세스로 푼 것입니다.</p>
+    </div>
+
+    <h3 class="blk"><span class="n">1-4</span>자동화 후 실제 흐름</h3>
+    <div class="flow">
+      <div class="step hot"><div class="t">사람이 하는 유일한 일</div><div class="d">제품 등록</div><div class="s">오늘 생산 예정 제품·수량 입력</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">AUTO</div><div class="d">소요량 산출</div><div class="s">배합비 × 수량 자동 계산</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">AUTO</div><div class="d">부족분 판단</div><div class="s">가용재고·입고대기와 자동 비교</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">AUTO</div><div class="d">발주 / 이관</div><div class="s">발주 목록 · 이관 결재선 자동 지정</div></div>
+    </div>
+
+    <h3 class="blk"><span class="n">1-5</span>수기 → 자동, 무엇이 바뀌었나</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>구분</th><th>기존 (수기)</th><th>도입 후 (자동)</th></tr></thead>
+        <tbody>
+          <tr><td>소요량 계산</td><td class="was">배합비 × 수량을 손으로</td><td class="now">등록 시 자동 산출</td></tr>
+          <tr><td>1·2공장 합산</td><td class="was">코드별 수기(누락·중복)</td><td class="now">동일 원료 자동 합산</td></tr>
+          <tr><td>부족분 판단</td><td class="was">재고장·공장현황 손비교</td><td class="now">가용재고 자동 비교</td></tr>
+          <tr><td>이관 결재</td><td class="was">단가 찾아 수기 상신</td><td class="now">체크 → 결재선 자동 지정</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="blk"><span class="n">1-6</span>왜 이렇게 만들었나 &amp; 기대효과</h3>
+    <div class="card">
+      <ul class="clean">
+        <li><b>왜 웹앱인가</b> — 구매팀 전원이 URL·로그인만으로 접속. 개인 PC 설치·엑셀 버전 관리가 필요 없음</li>
+        <li><b>왜 관리형 DB인가</b> — 서버를 직접 운영하지 않아도 됨. 흩어진 규격·배합비·단가·재고·소비기한을 한곳에서 유기적으로 연결</li>
+        <li><b>사람의 시간을 어디로</b> — 반복 계산에서 풀려난 시간을 <b>거래처 관리·단가 협상·안전재고 정책</b> 같은 판단 업무로 전환</li>
+        <li><b>속인화 해소</b> — 계산 로직이 시스템에 있으니 담당자 부재·이직에도 업무가 멈추지 않고 인수인계가 쉬움</li>
+        <li><b>확장성</b> — 같은 구조로 타 공장·품목군에 확대 적용 가능</li>
+      </ul>
+    </div>
+    <p><b>현재 상태</b> — 웹앱으로 배포 완료되어 실사용 가능한 상태입니다. (다음 단계: ERP사의 API 지원이 확정되면 엑셀 수령을 API 직접 연동으로 대체하는 2차 고도화)</p>
+  </section>
+
+  <!-- ================= PART 2 ================= -->
+  <section class="part2">
+    <div class="sectag">Part 2 · 중단 사례</div>
+    <h2><span class="secnum">2</span>영업지원 표시사항 비교</h2>
+    <p>영업지원팀의 라벨 검수를 자동화하려던 시도입니다. 기술적으로는 상당히 끌어올렸지만, <b>비용 대비 효과가 안 나와 스스로 중단</b>했습니다. 실패한 이유를 정직하게 정리합니다.</p>
+
+    <h3 class="blk"><span class="n">2-1</span>어떤 업무였나</h3>
+    <div class="card">
+      <p style="margin-top:0">건강기능식품 케이스(단상자·설명서·라벨)의 <b>표시사항(라벨 문구)이 개정</b>될 때,
+      영업지원팀은 <b>변경 전 도안과 변경 후 도안을 나란히 놓고 한 글자씩 눈으로 대조</b>하며 바뀐 곳을 찾아야 했습니다.</p>
+      <ul class="clean pain">
+        <li>조밀한 한글 문단에 낀 <b>한두 문장·한 글자 변경</b>도 놓치면 안 됨 — 규제 검수라 <b>누락 = 리스크</b></li>
+        <li>파일 크기·비율이 다른 전/후(전개도·재촬영본)를 눈으로 맞춰보는 것 자체가 피로하고 오래 걸림</li>
+        <li>QR코드처럼 <b>눈으로는 같아 보여도 내용이 바뀐</b> 경우는 사실상 확인 불가</li>
+      </ul>
+    </div>
+
+    <h3 class="blk"><span class="n">2-2</span>어떤 방식으로 접근했나</h3>
+    <p>"업로드하면 자동으로 바뀐 곳을 찾아 하이라이트하고, 검수용 PDF까지 뽑아준다"를 목표로 파이프라인을 만들었습니다.</p>
+    <div class="flow">
+      <div class="step"><div class="t">1</div><div class="d">업로드</div><div class="s">개정 전/후 도안<br>(PDF·AI·JPG·PNG)</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">2</div><div class="d">자동 변경점 검출</div><div class="s">AI가 바뀐 문구를<br>찾아 하이라이트</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">3</div><div class="d">좌우 비교</div><div class="s">확대·이동·동기화<br>화면 대조</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="t">4</div><div class="d">PDF 검수서</div><div class="s">변경점 표시 +<br>의견란 출력</div></div>
+    </div>
+    <p style="color:var(--sub); font-size:.92rem">※ 기술적으로 의미 있는 성과도 있었습니다. 라벨을 통째로 AI에 주면 놓치지만, <b>영역을 잘게 잘라 고해상도로 집중시키면 저렴한 AI도 정확히 읽는다</b>는 점을 실측으로 확인해 엔진의 축으로 삼았습니다. QR은 이미지 디코딩으로 내용 변경까지 잡아냈습니다.</p>
+
+    <h3 class="blk"><span class="n">2-3</span>정확도를 올리기 위한 기술 여정</h3>
+    <p>"어떤 AI를 쓰느냐"를 계속 바꿔가며 정확도와 비용·속도의 균형을 찾으려 했습니다. 그 과정이 곧 이 프로젝트의 한계를 보여줍니다.</p>
+    <div class="journey">
+      <div class="jrow">
+        <div class="jdot j1">1</div>
+        <div class="jbody">
+          <div class="jt">GPT-4o API로 시작</div>
+          <div class="jp">가장 먼저 시도한 방식.</div>
+          <div class="jbad">조밀한 문단의 변경을 요약해 놓치거나, 없는 성분을 지어내는(환각) 문제</div>
+        </div>
+      </div>
+      <div class="jrow">
+        <div class="jdot j2">2</div>
+        <div class="jbody">
+          <div class="jt">Gemini API로 전환</div>
+          <div class="jp">모델을 바꿔 정확도·비용을 개선해보려 시도.</div>
+        </div>
+      </div>
+      <div class="jrow">
+        <div class="jdot j3">3</div>
+        <div class="jbody">
+          <div class="jt">Claude(구독형 CLI)로 전환</div>
+          <div class="jp">정확도가 좋아 검토했으나 —</div>
+          <div class="jbad">세션 사용이 몰릴 때 <b>한 건 처리에 15분 이상</b> 소요. 계정 공유는 약관 위반이라 팀 도구로 부적합</div>
+        </div>
+      </div>
+      <div class="jrow">
+        <div class="jdot j4">4</div>
+        <div class="jbody">
+          <div class="jt">Gemini API + Microsoft OCR 연동</div>
+          <div class="jp">두 엔진을 함께 써 <b>정확도를 실제로 끌어올린</b> 최종 구성.</div>
+          <div class="jbad">그럼에도 <b>한 건당 약 650원</b>을 지불하며 돌릴 만한 정확도에는 도달하지 못함</div>
+        </div>
+      </div>
+      <div class="jrow">
+        <div class="jdot j5">⛔</div>
+        <div class="jbody">
+          <div class="jt">중단(드롭) 결정</div>
+          <div class="jp">기술을 더 붙일수록 비용은 오르는데, 규제 검수가 요구하는 <b>"거의 놓치지 않는" 신뢰 수준</b>에는 계속 못 미쳤습니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="blk"><span class="n">2-4</span>왜 드롭했나 — 비용 대비 효과</h3>
+    <div class="callout drop">
+      <div class="ct">판단의 핵심</div>
+      <p>이 업무는 <b>규제 라벨 검수</b>입니다. 놓친 변경 하나가 곧 규제 리스크이므로 <b>"거의 100% 잡아내는" 신뢰도</b>가 전제입니다.
+      한 건당 650원을 내면서도 그 신뢰도에 못 미치면, 결국 사람이 다시 전수 확인해야 합니다. 그러면 <b>자동화 비용은 순수 추가 비용</b>이 됩니다.</p>
+    </div>
+    <p>같은 650원을 어디에 쓰는 게 이득인지 비교해봤습니다.</p>
+    <div class="decision">
+      <div class="dopt no">
+        <div class="dh">✗ 자동화 유지</div>
+        <div class="cost">≈ 650원 / 건</div>
+        <div class="cn">그래도 정확도 부족 → 사람이 재확인 필요 → 비용은 비용대로, 검수는 검수대로</div>
+      </div>
+      <div class="dopt yes">
+        <div class="dh">✓ Claude Pro 구독 1개</div>
+        <div class="cost">월 구독 1개</div>
+        <div class="cn">영업지원팀이 계정을 <b>돌려 쓰며</b> 필요할 때 직접 검수 — 같은 예산으로 더 이득</div>
+      </div>
+    </div>
+
+    <h3 class="blk"><span class="n">2-5</span>영업지원팀 의견</h3>
+    <div class="card">
+      <p style="margin-top:0">영업지원팀도 <b>"이 돈이면 Claude Pro 계정 하나 구독해서 팀이 돌려 쓰는 게 낫다"</b>는 결론에 <b>동의</b>했습니다.
+      실제 사용자인 팀의 판단과 개발자의 판단이 일치한 만큼, 자동화를 무리하게 끌고 가지 않고 <b>합리적으로 중단</b>하는 것이 맞다고 보았습니다.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Closing -->
+  <section>
+    <h2>맺음말 — 자동화의 기준</h2>
+    <div class="card">
+      <ul class="clean">
+        <li><b>구매 발주</b>는 계산이 <b>규칙으로 딱 떨어지고</b> 반복량이 커서, 자동화가 시간·정확도·속인화 해소로 <b>확실히 남는 장사</b>였습니다 → 유지·고도화.</li>
+        <li><b>표시사항 비교</b>는 <b>"거의 완벽"이 전제인 규제 검수</b>인데 AI 정확도가 그 문턱을 못 넘어, 건당 비용이 순손실이 되었습니다 → 더 싼 대안(Claude Pro 수동)으로 대체하며 <b>중단</b>.</li>
+      </ul>
+      <p style="margin-bottom:0">두 건 모두 <b>"만들 수 있느냐"가 아니라 "비용 대비 이득이냐(ROI)"</b>로 판단했습니다.
+      될 것은 끝까지 밀어붙여 배포했고, 안 될 것은 감정 없이 접었습니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>본 보고서는 사내 보고용으로 작성되었으며, 배합비·단가·거래처·접속정보 등 영업비밀 및 민감정보는 일절 포함하지 않았습니다.</p>
+  </footer>
+
+</div>
+</body>
+</html>
