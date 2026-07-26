@@ -304,7 +304,7 @@
         <p class="s-lead">"전/후 이미지를 통째로 AI에 주면 되겠지" 했지만, 바뀐 곳을 놓치거나 없는 걸 지어냈습니다(환각). 아래 벽들 때문에 도구를 겹쳐야 했습니다.</p>
         <ul class="list">
           <li><span class="k">내용은 잘게 잘라 줘야 정확</span> — 통째로 주면 뭉개짐 → 영역 <b>크롭</b></li>
-          <li><span class="k">"무엇이 바뀌었나"와 "어디가 바뀌었나"는 다른 문제</span> — 위치는 AI가 특정하지 못함 → <b>OCR</b>로 위치 좌표(Microsoft OCR 사용)</li>
+          <li><span class="k">"무엇이 바뀌었나"와 "어디가 바뀌었나"는 다른 문제</span> — 위치는 AI가 특정하지 못함 → <b>OCR</b>로 위치 좌표(Google Vision OCR 사용)</li>
           <li><span class="k">크기·비율이 다른 전/후</span> — 대응 영역끼리 짝지어 <b>정렬</b>하는 로직 별도</li>
           <li><span class="k">QR코드</span> — 눈으로도 OCR로도 못 읽음 → <b>디코딩</b>으로 내용 비교</li>
         </ul>
@@ -337,7 +337,7 @@
           </div>
           <div class="step">
             <div class="no">4</div>
-            <div><div class="st">Gemini API + Microsoft OCR</div><div class="sp">두 엔진을 함께 쓴 최종 구성 — 기술적으로는 개선</div><div class="si"><span class="lab">한계</span> — 변경 누락·오검출·하이라이트 위치 오류가 남았고, 한 건당 약 650원까지 붙음</div></div>
+            <div><div class="st">Gemini API + Google Vision OCR</div><div class="sp">두 엔진을 함께 쓴 최종 구성 — 기술적으로는 개선</div><div class="si"><span class="lab">한계</span> — 변경 누락·오검출·하이라이트 위치 오류가 남았고, 한 건당 약 650원까지 붙음</div></div>
           </div>
           <div class="step end">
             <div class="no">×</div>
