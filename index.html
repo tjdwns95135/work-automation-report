@@ -152,11 +152,16 @@
     background:rgba(255,255,255,.8); padding:4px 12px; border-radius:20px; z-index:30; transition:opacity .5s; letter-spacing:.02em}
 
   @media print{
-    body{overflow:visible; background:#fff}
-    .viewport{position:static; display:block}
-    .stage{width:auto!important; height:auto!important; transform:none!important}
-    .slide{position:static; display:flex!important; width:100%; height:auto; min-height:0; box-shadow:none;
-      border-bottom:1px solid #ccc; page-break-after:always; padding:34px 24px}
+    /* 16:9 슬라이드 1장 = 페이지 1장. 1280×720px = 13.333in×7.5in = PowerPoint 와이드(16:9) */
+    @page{size:1280px 720px; margin:0}
+    html,body{margin:0; padding:0; overflow:visible; background:#fff}
+    .viewport{position:static!important; display:block!important; width:auto!important; height:auto!important;
+      transform:none!important; overflow:visible!important}
+    .stage{position:static!important; width:1280px!important; height:auto!important; transform:none!important; margin:0}
+    .slide{position:relative!important; inset:auto!important; display:flex!important;
+      width:1280px!important; height:720px!important; min-height:720px; box-shadow:none!important;
+      page-break-after:always; break-after:page; overflow:hidden}
+    .slide:last-child{page-break-after:avoid; break-after:avoid}
     .chrome,.progress,.ctrl,.edge,.hint{display:none!important}
   }
 </style>
